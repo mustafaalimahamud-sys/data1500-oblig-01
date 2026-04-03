@@ -60,6 +60,33 @@ Denne modellen er mer realistisk enn en enkel modell fordi den inkluderer låser
 
 Dette sikrer både datakvalitet og dataintegritet på databasenivå.
 
+**ER-diagram:**
+
+erDiagram
+KUNDE {
+varchar fornavn
+varchar etternavn
+varchar mobilnr
+text epost
+}
+SYKKEL {
+varchar modell
+date innkjopsdato
+}
+STASJON {
+varchar navn
+varchar adresse
+}
+UTLEIE {
+timestamp utleie_tidspunkt
+timestamp innlevert_tidspunkt
+}
+KUNDE ||--o{ UTLEIE : "leier"
+SYKKEL ||--o{ UTLEIE : "brukes i"
+STASJON ||--o{ UTLEIE : "start"
+STASJON ||--o{ UTLEIE : "slutt"
+
+
 ---
 
 ### Oppgave 1.3: Primærnøkler
@@ -74,6 +101,35 @@ Alle tabeller bruker **surrogatnøkler (SERIAL)**:
 
 **Begrunnelse:**
 Surrogatnøkler er stabile og uavhengige av endringer i virkelige data (f.eks. telefonnummer). De gir også bedre ytelse i join-operasjoner.
+
+erDiagram
+KUNDE {
+int kunde_id PK
+varchar fornavn
+varchar etternavn
+varchar mobilnr
+text epost
+}
+SYKKEL {
+int sykkel_id PK
+varchar modell
+date innkjopsdato
+}
+STASJON {
+int stasjon_id PK
+varchar navn
+varchar adresse
+}
+UTLEIE {
+int utleie_id PK
+timestamp utleie_tidspunkt
+timestamp innlevert_tidspunkt
+}
+KUNDE ||--o{ UTLEIE : "leier"
+SYKKEL ||--o{ UTLEIE : "brukes i"
+STASJON ||--o{ UTLEIE : "start"
+STASJON ||--o{ UTLEIE : "slutt"
+
 
 ---
 
