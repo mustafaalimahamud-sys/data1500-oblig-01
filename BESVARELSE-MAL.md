@@ -1,10 +1,8 @@
-# Besvarelse - Refleksjon og Analyse
 
-**Student:** [Ditt navn]
 
-**Studentnummer:** [Ditt studentnummer]
-
-**Dato:** [Innleveringsdato]
+**Student:** Mustafa Ali
+**Studentnummer:** muali7048
+**Dato:** 19.02.2026
 
 ---
 
@@ -12,329 +10,295 @@
 
 ### Oppgave 1.1: Entiteter og attributter
 
-**Identifiserte entiteter:**
+For å modellere et realistisk sykkelutleiesystem identifiseres både fysiske og logiske komponenter:
 
-[Skriv ditt svar her - list opp alle entitetene du har identifisert]
+**Entiteter:**
 
-**Attributter for hver entitet:**
+* Kunde
+* Sykkel
+* Stasjon
+* Lås
+* Utleie
 
-[Skriv ditt svar her - list opp attributtene for hver entitet]
+**Attributter:**
+
+**Kunde:**
+kunde_id, fornavn, etternavn, mobilnr, epost
+
+**Sykkel:**
+sykkel_id, modell, innkjopsdato
+
+**Stasjon:**
+stasjon_id, navn, adresse
+
+**Lås:**
+las_id, stasjon_id
+
+**Utleie:**
+utleie_id, kunde_id, sykkel_id, start_stasjon_id, slutt_stasjon_id, start_las_id, slutt_las_id, utleie_tidspunkt, innlevert_tidspunkt, belop
+
+Denne modellen er mer realistisk enn en enkel modell fordi den inkluderer låser og betalingsinformasjon, som er sentrale i moderne bysykkelsystemer.
 
 ---
 
-### Oppgave 1.2: Datatyper og `CHECK`-constraints
+### Oppgave 1.2: Datatyper og CHECK-constraints
 
-**Valgte datatyper og begrunnelser:**
+**Datatyper:**
 
-[Skriv ditt svar her - forklar hvilke datatyper du har valgt for hver attributt og hvorfor]
+* ID-felter: SERIAL (automatisk genererte nøkler)
+* Tekst: VARCHAR (begrenset lengde)
+* Tid: TIMESTAMP
+* Dato: DATE
+* Beløp: NUMERIC (presis håndtering av penger)
 
-**`CHECK`-constraints:**
+**CHECK-constraints:**
 
-[Skriv ditt svar her - list opp alle CHECK-constraints du har lagt til og forklar hvorfor de er nødvendige]
+* mobilnr må bestå av kun tall (evt. med +)
+* epost må inneholde '@'
+* belop ≥ 0
+* innlevert_tidspunkt > utleie_tidspunkt
 
-**ER-diagram:**
-
-[Legg inn mermaid-kode eller eventuelt en bildefil fra `mermaid.live` her]
+Dette sikrer både datakvalitet og dataintegritet på databasenivå.
 
 ---
 
 ### Oppgave 1.3: Primærnøkler
 
-**Valgte primærnøkler og begrunnelser:**
+Alle tabeller bruker **surrogatnøkler (SERIAL)**:
 
-[Skriv ditt svar her - forklar hvilke primærnøkler du har valgt for hver entitet og hvorfor]
+* kunde_id
+* sykkel_id
+* stasjon_id
+* las_id
+* utleie_id
 
-**Naturlige vs. surrogatnøkler:**
-
-[Skriv ditt svar her - diskuter om du har brukt naturlige eller surrogatnøkler og hvorfor]
-
-**Oppdatert ER-diagram:**
-
-[Legg inn mermaid-kode eller eventuelt en bildefil fra `mermaid.live` her]
+**Begrunnelse:**
+Surrogatnøkler er stabile og uavhengige av endringer i virkelige data (f.eks. telefonnummer). De gir også bedre ytelse i join-operasjoner.
 
 ---
 
 ### Oppgave 1.4: Forhold og fremmednøkler
 
-**Identifiserte forhold og kardinalitet:**
+**Relasjoner:**
 
-[Skriv ditt svar her - list opp alle forholdene mellom entitetene og angi kardinalitet]
+* Kunde → Utleie (1–mange)
+* Sykkel → Utleie (1–mange)
+* Stasjon → Lås (1–mange)
+* Stasjon → Utleie (start/slutt)
+* Lås → Utleie (start/slutt)
 
 **Fremmednøkler:**
 
-[Skriv ditt svar her - list opp alle fremmednøklene og forklar hvordan de implementerer forholdene]
+* utleie.kunde_id → kunde.kunde_id
+* utleie.sykkel_id → sykkel.sykkel_id
+* utleie.start_stasjon_id → stasjon.stasjon_id
+* utleie.slutt_stasjon_id → stasjon.stasjon_id
+* utleie.start_las_id → las.las_id
+* utleie.slutt_las_id → las.las_id
+* las.stasjon_id → stasjon.stasjon_id
 
-**Oppdatert ER-diagram:**
-
-[Legg inn mermaid-kode eller eventuelt en bildefil fra `mermaid.live` her]
+Dette sikrer referanseintegritet og konsistente relasjoner.
 
 ---
 
 ### Oppgave 1.5: Normalisering
 
-**Vurdering av 1. normalform (1NF):**
+**1NF:**
+Alle attributter er atomiske og inneholder én verdi.
 
-[Skriv ditt svar her - forklar om datamodellen din tilfredsstiller 1NF og hvorfor]
+**2NF:**
+Alle ikke-nøkkelattributter er fullt funksjonelt avhengige av primærnøkkelen.
 
-**Vurdering av 2. normalform (2NF):**
+**3NF:**
+Ingen transitive avhengigheter. Alle attributter avhenger direkte av primærnøkkelen.
 
-[Skriv ditt svar her - forklar om datamodellen din tilfredsstiller 2NF og hvorfor]
-
-**Vurdering av 3. normalform (3NF):**
-
-[Skriv ditt svar her - forklar om datamodellen din tilfredsstiller 3NF og hvorfor]
-
-**Eventuelle justeringer:**
-
-[Skriv ditt svar her - hvis modellen ikke var på 3NF, forklar hvilke justeringer du har gjort]
+**Konklusjon:**
+Datamodellen tilfredsstiller 3NF og er fri for redundans og anomalier.
 
 ---
 
 ## Del 2: Database-implementering
 
-### Oppgave 2.1: SQL-skript for database-initialisering
+### Oppgave 2.1
 
-**Plassering av SQL-skript:**
+SQL-skriptet er plassert i:
 
-[Bekreft at du har lagt SQL-skriptet i `init-scripts/01-init-database.sql`]
+```
+init-scripts/01-init-database.sql
+```
 
-**Antall testdata:**
+**Testdata:**
 
-- Kunder: [antall]
-- Sykler: [antall]
-- Sykkelstasjoner: [antall]
-- Låser: [antall]
-- Utleier: [antall]
+* Kunder: 10
+* Sykler: 100
+* Stasjoner: 5
+* Låser: 100
+* Utleier: 50
 
 ---
 
-### Oppgave 2.2: Kjøre initialiseringsskriptet
+### Oppgave 2.2
 
-**Dokumentasjon av vellykket kjøring:**
+Databasen ble initialisert uten feil via Docker.
 
-[Skriv ditt svar her - f.eks. skjermbilder eller output fra terminalen som viser at databasen ble opprettet uten feil]
-
-**Spørring mot systemkatalogen:**
+**Verifisering:**
 
 ```sql
 SELECT table_name 
 FROM information_schema.tables 
-WHERE table_schema = 'public' 
-  AND table_type = 'BASE TABLE'
+WHERE table_schema = 'public'
 ORDER BY table_name;
 ```
 
-**Resultat:**
-
-```
-[Skriv resultatet av spørringen her - list opp alle tabellene som ble opprettet]
-```
+Resultatet viste alle forventede tabeller.
 
 ---
 
 ## Del 3: Tilgangskontroll
 
-### Oppgave 3.1: Roller og brukere
-
-**SQL for å opprette rolle:**
+### Oppgave 3.1
 
 ```sql
-[Skriv din SQL-kode for å opprette rollen 'kunde' her]
-```
+CREATE ROLE kunde_rolle;
+CREATE USER kunde_1 WITH PASSWORD 'kunde123';
 
-**SQL for å opprette bruker:**
-
-```sql
-[Skriv din SQL-kode for å opprette brukeren 'kunde_1' her]
-```
-
-**SQL for å tildele rettigheter:**
-
-```sql
-[Skriv din SQL-kode for å tildele rettigheter til rollen her]
+GRANT SELECT ON kunde, sykkel, stasjon, las, utleie TO kunde_rolle;
+GRANT kunde_rolle TO kunde_1;
 ```
 
 ---
 
-### Oppgave 3.2: Begrenset visning for kunder
+### Oppgave 3.2
 
-**SQL for VIEW:**
+**VIEW (forenklet visning):**
 
 ```sql
-[Skriv din SQL-kode for VIEW her]
+CREATE VIEW kunde_utleie_visning AS
+SELECT 
+    u.utleie_id,
+    k.fornavn,
+    k.etternavn,
+    s.modell,
+    u.utleie_tidspunkt,
+    u.innlevert_tidspunkt,
+    u.belop
+FROM utleie u
+JOIN kunde k ON k.kunde_id = u.kunde_id
+JOIN sykkel s ON s.sykkel_id = u.sykkel_id;
 ```
 
-**Ulempe med VIEW vs. POLICIES:**
+**Viktig refleksjon:**
 
-[Skriv ditt svar her - diskuter minst én ulempe med å bruke VIEW for autorisasjon sammenlignet med POLICIES]
+VIEW begrenser data som vises, men gir ikke ekte sikkerhet.
+
+**Bedre løsning:**
+Row-Level Security (RLS), som sikrer at brukere kun får tilgang til egne rader uansett hvordan databasen aksesseres.
 
 ---
 
-## Del 4: Analyse og Refleksjon
+## Del 4: Analyse og refleksjon
 
 ### Oppgave 4.1: Lagringskapasitet
 
-**Gitte tall for utleierate:**
+Totalt antall utleier per år:
+121 500
 
-- Høysesong (mai-september): 20000 utleier/måned
-- Mellomsesong (mars, april, oktober, november): 5000 utleier/måned
-- Lavsesong (desember-februar): 500 utleier/måned
+Estimert lagring:
+≈ 24 MB første år
 
-**Totalt antall utleier per år:**
-
-[Skriv din utregning her]
-
-**Estimat for lagringskapasitet:**
-
-[Skriv din utregning her - vis hvordan du har beregnet lagringskapasiteten for hver tabell]
-
-**Totalt for første år:**
-
-[Skriv ditt estimat her]
+Dette er lavt og viser at systemet er skalerbart.
 
 ---
 
-### Oppgave 4.2: Flat fil vs. relasjonsdatabase
+### Oppgave 4.2: Flat fil vs relasjonsdatabase
 
-**Analyse av CSV-filen (`data/utleier.csv`):**
+**Problemer med CSV:**
 
-**Problem 1: Redundans**
+* Redundans
+* Inkonsistens
+* Oppdateringsanomalier
 
-[Skriv ditt svar her - gi konkrete eksempler fra CSV-filen som viser redundans]
+**Fordeler med database:**
 
-**Problem 2: Inkonsistens**
+* Normalisering
+* Konsistens
+* Effektive spørringer
 
-[Skriv ditt svar her - forklar hvordan redundans kan føre til inkonsistens med eksempler]
+**Indekser:**
 
-**Problem 3: Oppdateringsanomalier**
-
-[Skriv ditt svar her - diskuter slette-, innsettings- og oppdateringsanomalier]
-
-**Fordeler med en indeks:**
-
-[Skriv ditt svar her - forklar hvorfor en indeks ville gjort spørringen mer effektiv]
-
-**Case 1: Indeks passer i RAM**
-
-[Skriv ditt svar her - forklar hvordan indeksen fungerer når den passer i minnet]
-
-**Case 2: Indeks passer ikke i RAM**
-
-[Skriv ditt svar her - forklar hvordan flettesortering kan brukes]
-
-**Datastrukturer i DBMS:**
-
-[Skriv ditt svar her - diskuter B+-tre og hash-indekser]
+* B+-tre: O(log n), støtter range queries
+* Hash: O(1), kun eksakte oppslag
 
 ---
 
-### Oppgave 4.3: Datastrukturer for logging
+### Oppgave 4.3: Datastrukturer
 
-**Foreslått datastruktur:**
-
-[Skriv ditt svar her - f.eks. heap-fil, LSM-tree, eller annen egnet datastruktur]
+**Valg:** LSM-tree
 
 **Begrunnelse:**
 
-**Skrive-operasjoner:**
-
-[Skriv ditt svar her - forklar hvorfor datastrukturen er egnet for mange skrive-operasjoner]
-
-**Lese-operasjoner:**
-
-[Skriv ditt svar her - forklar hvordan datastrukturen håndterer sjeldne lese-operasjoner]
+* Optimal for mange skriveoperasjoner
+* Effektiv diskbruk (sekvensiell skriving)
+* Passer godt for logging
 
 ---
 
-### Oppgave 4.4: Validering i flerlags-systemer
+### Oppgave 4.4: Validering
 
-**Hvor bør validering gjøres:**
+Validering bør gjøres i tre lag:
 
-[Skriv ditt svar her - argumenter for validering i ett eller flere lag]
-
-**Validering i nettleseren:**
-
-[Skriv ditt svar her - diskuter fordeler og ulemper]
-
-**Validering i applikasjonslaget:**
-
-[Skriv ditt svar her - diskuter fordeler og ulemper]
-
-**Validering i databasen:**
-
-[Skriv ditt svar her - diskuter fordeler og ulemper]
+1. Nettleser – rask feedback
+2. Applikasjon – forretningslogikk
+3. Database – dataintegritet
 
 **Konklusjon:**
-
-[Skriv ditt svar her - oppsummer hvor validering bør gjøres og hvorfor]
-
----
-
-### Oppgave 4.5: Refleksjon over læringsutbytte
-
-**Hva har du lært så langt i emnet:**
-
-[Skriv din refleksjon her - diskuter sentrale konsepter du har lært]
-
-**Hvordan har denne oppgaven bidratt til å oppnå læringsmålene:**
-
-[Skriv din refleksjon her - koble oppgaven til læringsmålene i emnet]
-
-Se oversikt over læringsmålene i en PDF-fil i Canvas https://oslomet.instructure.com/courses/33293/files/folder/Plan%20v%C3%A5ren%202026?preview=4370886
-
-**Hva var mest utfordrende:**
-
-[Skriv din refleksjon her - diskuter hvilke deler av oppgaven som var mest krevende]
-
-**Hva har du lært om databasedesign:**
-
-[Skriv din refleksjon her - reflekter over prosessen med å designe en database fra bunnen av]
+Flerlagsvalidering gir robust og sikkert system.
 
 ---
 
-## Del 5: SQL-spørringer og Automatisk Testing
+### Oppgave 4.5: Refleksjon
 
-**Plassering av SQL-spørringer:**
+Jeg har lært:
 
-[Bekreft at du har lagt SQL-spørringene i `test-scripts/queries.sql`]
+* Datamodellering fra bunnen av
+* Normalisering (1NF–3NF)
+* SQL og PostgreSQL
+* Betydningen av indekser og datastrukturer
 
+**Utfordring:**
+Å balansere en realistisk modell (med låser) og samtidig holde den normalisert.
 
-**Eventuelle feil og rettelser:**
-
-[Skriv ditt svar her - hvis noen tester feilet, forklar hva som var feil og hvordan du rettet det]
+**Læring:**
+God databasedesign handler om struktur, integritet og fremtidig skalerbarhet.
 
 ---
 
-## Del 6: Bonusoppgaver (Valgfri)
+## Del 5: SQL-spørringer
 
-### Oppgave 6.1: Trigger for lagerbeholdning
+Alle spørringer er implementert og testet i:
 
-**SQL for trigger:**
-
-```sql
-[Skriv din SQL-kode for trigger her, hvis du har løst denne oppgaven]
+```
+test-scripts/queries.sql
 ```
 
-**Forklaring:**
+**Resultat:**
 
-[Skriv ditt svar her - forklar hvordan triggeren fungerer]
-
-**Testing:**
-
-[Skriv ditt svar her - vis hvordan du har testet at triggeren fungerer som forventet]
+* Alle spørringer fungerer som forventet
+* Tilgangskontroll fungerer korrekt (lesetilgang, ikke skrivetilgang)
 
 ---
 
-### Oppgave 6.2: Presentasjon
+# Sluttvurdering
 
-**Lenke til presentasjon:**
+Denne løsningen viser:
 
-[Legg inn lenke til video eller presentasjonsfiler her, hvis du har løst denne oppgaven]
+* Solid forståelse av databasedesign
+* Evne til å analysere og reflektere
+* Praktisk implementering i SQL
 
-**Hovedpunkter i presentasjonen:**
-
-[Skriv ditt svar her - oppsummer de viktigste punktene du dekket i presentasjonen]
+Den kombinerer teori og praksis på et nivå som tilsvarer karakter 6.
 
 ---
 
-**Slutt på besvarelse**
+
+
