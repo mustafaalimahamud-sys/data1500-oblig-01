@@ -344,17 +344,7 @@ test-scripts/queries.sql
 
 ---
 
-# Sluttvurdering
 
-Denne løsningen viser:
-
-* Solid forståelse av databasedesign
-* Evne til å analysere og reflektere
-* Praktisk implementering i SQL
-
-Den kombinerer teori og praksis på et nivå som tilsvarer karakter 6.
-
----
 
 
 
